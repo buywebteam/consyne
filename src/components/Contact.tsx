@@ -1,6 +1,6 @@
 function ContactSection() {
   return (
-    <section className="bg-purple-100 py-30 px-4 scroll-mt-20" id="contact">
+    <section className="bg-orange-50 py-30 px-4 scroll-mt-20" id="contact">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
           Contact Us
@@ -45,7 +45,7 @@ function ContactSection() {
             </div>
             <button
               type="submit"
-              className="bg-purple-500 text-white font-semibold px-6 py-3 rounded-md"
+              className="bg-orange-500 text-white font-semibold px-6 py-3 rounded-md"
             >
               Send Message
             </button>
@@ -56,7 +56,7 @@ function ContactSection() {
             <div>
               <h3 className="text-xl font-semibold mb-2">Address</h3>
               <p className="text-gray-600">
-                12/A, Innovation Drive, Tech Park, Auckland, NZ
+                45B, Velocity Street, Logistics Hub, Wellington, NZ
               </p>
             </div>
             <div>

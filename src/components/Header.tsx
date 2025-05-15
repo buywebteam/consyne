@@ -9,7 +9,7 @@ const Navbar = () => {
 
   const linkClass = (id: string) =>
     `hover:underline ${
-      activeLink === id ? "text-purple-500 font-semibold" : ""
+      activeLink === id ? "text-orange-500 font-semibold" : ""
     }`;
 
   // Function to handle smooth scroll
@@ -25,7 +25,7 @@ const Navbar = () => {
     <nav className="bg-white text-black shadow sticky top-0 z-50 p-5">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center">
-          <div className="text-xl font-bold">ConsiTrack</div>
+          <div className="text-xl font-bold">Consyne</div>
 
           <div className="md:hidden">
             <button onClick={toggleMenu} className="focus:outline-none">

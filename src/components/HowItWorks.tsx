@@ -27,7 +27,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="bg-purple-100 py-30 px-4">
+    <section className="bg-orange-50 py-30 px-4">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl font-bold mb-4">How It Works</h2>
         <p className="mb-12 text-lg">

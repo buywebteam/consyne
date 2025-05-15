@@ -1,25 +1,46 @@
 function Testimonials() {
   const testimonials = [
     {
-      name: "Anita Medic",
-      title: "CEO, Medical Institute",
+      name: "Liam Chen",
+      title: "Founder, Nova Electronics",
       comment:
-        "ConsiTrack has completely transformed how we handle our international logistics. Reliable, professional, and always on time!",
-      image: "https://i.pravatar.cc/150?img=47",
+        "Consyne has streamlined our global logistics. Their reliability and efficiency give us peace of mind every time.",
+      image: "https://i.pravatar.cc/150?img=5",
     },
     {
-      name: "James George",
-      title: "Operations Manager, QuickTech",
+      name: "Fatima Bello",
+      title: "Logistics Lead, Bella Organics",
       comment:
-        "Their real-time tracking and customer support are second to none. I can’t recommend them enough.",
-      image: "https://i.pravatar.cc/150?img=12",
+        "From tracking to delivery, everything is handled professionally. Their team always goes the extra mile.",
+      image: "https://i.pravatar.cc/150?img=33",
     },
     {
-      name: "Amaka Okafor",
-      title: "Founder, Amaka Fashion",
+      name: "Carlos Martinez",
+      title: "Supply Chain Manager, AutoParts MX",
       comment:
-        "Working with ConsiTrack has been seamless. They make shipping simple and stress-free for my growing business.",
-      image: "https://i.pravatar.cc/150?img=38",
+        "Excellent service and communication. Consyne helps us stay ahead with dependable international logistics.",
+      image: "https://i.pravatar.cc/150?img=19",
+    },
+    {
+      name: "Sophia Müller",
+      title: "Operations Director, EuroTech GmbH",
+      comment:
+        "We’ve tried multiple providers, but Consyne stands out with consistency and proactive support.",
+      image: "https://i.pravatar.cc/150?img=45",
+    },
+    {
+      name: "David Okoro",
+      title: "CEO, Jumia Traders",
+      comment:
+        "Their commitment to on-time delivery and transparent tracking is unmatched. Highly recommended for African markets.",
+      image: "https://i.pravatar.cc/150?img=24",
+    },
+    {
+      name: "Isabelle Dupont",
+      title: "Founder, Maison Belle",
+      comment:
+        "As a growing brand, logistics was a big worry—until we partnered with Consyne. Now everything flows effortlessly.",
+      image: "https://i.pravatar.cc/150?img=9",
     },
   ];
 
@@ -37,7 +58,7 @@ function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-purple-50 p-6 rounded-lg shadow-md hover:shadow-lg transition"
+              className="bg-orange-50 p-6 rounded-lg shadow-md hover:shadow-lg transition"
             >
               <div className="flex items-center gap-4 mb-4">
                 <img

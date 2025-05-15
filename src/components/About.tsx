@@ -4,11 +4,10 @@ function AboutUs() {
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl font-bold mb-6">About Us</h2>
         <p className="mb-8 text-lg sm:text-xl">
-          At ConsiTrack, we’re revolutionizing logistics for businesses of all
-          sizes. Our mission is to provide seamless, reliable, and efficient
-          transport solutions across the globe. Whether you’re a small startup
-          or a large corporation, we handle the logistics so you can focus on
-          what matters most—growing your business.
+          At Consyne, we’re transforming how businesses manage logistics and
+          transportation. With a passion for innovation and a commitment to
+          excellence, we deliver smart, scalable, and dependable logistics
+          solutions that empower businesses to thrive locally and globally.
         </p>
 
         <div className="flex items-center justify-center">
@@ -17,10 +16,10 @@ function AboutUs() {
               Our Mission
             </h3>
             <p className="text-lg sm:text-xl">
-              At ConsiTrack, we believe logistics should be effortless. Our
-              mission is to simplify global transport by delivering reliable,
-              on-time shipping solutions—ensuring every package, big or small,
-              arrives safely and seamlessly at its destination
+              Our mission is to make logistics frictionless. We aim to connect
+              people and businesses through fast, transparent, and secure
+              delivery networks—bringing the world closer, one shipment at a
+              time.
             </p>
           </div>
         </div>

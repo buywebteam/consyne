@@ -2,13 +2,13 @@ import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-purple-500 text-white py-30">
+    <footer className="bg-orange-500 text-white py-30">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col sm:flex-row justify-between items-center">
           {/* Logo and Company Information */}
           <div className="text-center sm:text-left mb-6 sm:mb-0">
             <a href="/" className="text-3xl font-bold">
-              ConsiTrack
+              Consyne
             </a>
             <p className="mt-2 text-lg">
               Worldwide Delivery. Seamless Execution
@@ -48,7 +48,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="mt-12 text-center">
           <p className="text-lg">
-            &copy; {new Date().getFullYear()} ConsiTrack. All rights reserved.
+            &copy; {new Date().getFullYear()} Consyne. All rights reserved.
           </p>
         </div>
       </div>

@@ -1,28 +1,31 @@
+import { FaTruck, FaWarehouse, FaBox } from "react-icons/fa";
+import { MdDescription } from "react-icons/md";
+
 function Services() {
   const services = [
     {
       title: "Freight Forwarding",
       description:
         "Efficient air, sea, and land freight solutions tailored to your business needs.",
-      icon: "🚛",
+      icon: <FaTruck className="text-3xl text-orange-500" />,
     },
     {
       title: "Customs Clearance",
       description:
         "Seamless documentation and customs handling to ensure smooth deliveries.",
-      icon: "📄",
+      icon: <MdDescription className="text-3xl text-orange-500" />,
     },
     {
       title: "Warehousing",
       description:
         "Secure and flexible storage options for your goods with inventory management.",
-      icon: "🏬",
+      icon: <FaWarehouse className="text-3xl text-orange-500" />,
     },
     {
       title: "Last Mile Delivery",
       description:
         "Timely and reliable delivery to your customer’s doorstep anywhere, anytime.",
-      icon: "📦",
+      icon: <FaBox className="text-3xl text-orange-500" />,
     },
   ];
 
@@ -38,7 +41,7 @@ function Services() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-purple-50 rounded-lg shadow-md p-6 hover:shadow-xl transition duration-300 text-center"
+              className="bg-orange-50 rounded-lg shadow-md p-6 hover:shadow-xl transition duration-300 text-center"
             >
               <div className="text-4xl mb-4">{service.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{service.title}</h3>

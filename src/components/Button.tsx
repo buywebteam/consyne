@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({
     }
   > = {
     default: {
-      bgColor: "bg-purple-500",
+      bgColor: "bg-orange-500",
       textColor: "text-white",
       border: "",
       width: "w-[200px]",
