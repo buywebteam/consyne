@@ -11,7 +11,7 @@ const Footer = () => {
               Consyne
             </a>
             <p className="mt-2 text-lg">
-              Worldwide Delivery. Seamless Execution
+              Reliable, Scalable, Global Logistics{" "}
             </p>
           </div>
 

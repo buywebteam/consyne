@@ -13,12 +13,12 @@ function Hero() {
           {/* Text Section */}
           <div className="w-full md:w-1/2 text-center md:text-left mt-8 md:mt-0">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-center">
-              Worldwide Delivery. Seamless Execution
+              Reliable, Scalable, Global Logistics{" "}
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl my-4 sm:my-6 text-center">
-              We take care of every aspect of transport and logistics—so you can
-              focus on growing your business, serving your customers, and
-              achieving your goals without the stress of supply chain challenges
+              Let us manage the complexities of transport and logistics, giving
+              you the freedom to concentrate on scaling your business and
+              delivering exceptional value to your customers
             </p>
             <div className="flex justify-center items-center">
               <a href="https://wa.me/1234567890">
