@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { db } from "../../firebaseConfig/firebasease"; // Adjust the import path
+import { db } from "../../firebaseConfig/firebase"; // Adjust the import path
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
