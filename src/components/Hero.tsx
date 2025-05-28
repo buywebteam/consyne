@@ -22,7 +22,7 @@ function Hero() {
             </p>
             <div className="flex justify-center items-center">
               <a href="https://wa.me/1234567890">
-                <Button label="Track Shipment" />
+                <Button label="Get Started" />
               </a>
             </div>
           </div>
