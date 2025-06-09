@@ -9,10 +9,12 @@ import Services from "./Services";
 import Testimonials from "./Testimonials";
 import WhyChooseUs from "./WhyChooseUs";
 import StickyTelegramIcon from "./TelegramIcon";
+import Header from "./Header";
 
 function Home() {
   return (
     <div id="home" className="scroll-mt-20">
+      <Header />
       <Hero />
       <WhyChooseUs />
       <Services />

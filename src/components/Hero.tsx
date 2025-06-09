@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Button from "./Button";
 
 function Hero() {
@@ -21,9 +22,9 @@ function Hero() {
               delivering exceptional value to your customers
             </p>
             <div className="flex justify-center items-center">
-              <a href="https://wa.me/1234567890">
+              <Link to="/signup">
                 <Button label="Get Started" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
