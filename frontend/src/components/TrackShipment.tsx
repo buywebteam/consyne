@@ -220,7 +220,7 @@ function TrackShipment() {
               <div>
                 <span className="text-sm text-gray-600">Shipment Status:</span>
                 <p
-                  className={`font-medium inline-block px-2 py-1 border rounded ${getStatusColor(
+                  className={`font-medium inline-block px-2 py-1 border rounded-full ${getStatusColor(
                     shipmentData.status
                   )}`}
                 >
