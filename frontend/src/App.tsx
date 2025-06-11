@@ -6,7 +6,7 @@ import Services from "./components/Services";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import Sidebar from "./components/sidebar";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
@@ -19,18 +19,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/sidebar"
-          element={
-            <Sidebar
-              onSelect={(page: string) => {
-                // handle page selection, e.g., navigate or set state
-                console.log("Selected page:", page);
-              }}
-              activePage="home"
-            />
-          }
-        />
+        <Route path="/dashboard" element={<Dashboard />} />{" "}
       </Routes>
     </>
   );
