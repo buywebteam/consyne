@@ -3,7 +3,7 @@ import CreateShipment from "./CreateShipment";
 import TrackShipment from "./TrackShipment";
 import LogoutModal from "./Logout";
 import StickyTelegramIcon from "./TelegramIcon";
-import Sidebar from "./sidebar";
+import Sidebar from "./Sidebar";
 
 const Dashboard = () => {
   const [selected, setSelected] = useState<string>(() => {
