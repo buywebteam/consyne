@@ -1,12 +1,46 @@
-const CheckEmail = () => (
-  <div className="min-h-screen bg-orange-50 flex items-center justify-center p-4">
-    <div className="max-w-md bg-white p-8 rounded shadow text-center">
-      <h2 className="text-3xl font-bold mb-4">Check your email</h2>
-      <p className="text-gray-600">
-        We've sent you a confirmation link. Please check your email inbox and
-        follow the link to activate your account.
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+
+const CheckEmail = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        // User is already confirmed/logged in
+        navigate("/login");
+      }
+    };
+
+    checkSession(); // Initial check when component mounts
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          navigate("/login");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h2 className="text-xl font-semibold mb-4">Check your email</h2>
+      <p className="mb-6">
+        We’ve sent you a confirmation email. Once you confirm, you’ll be
+        redirected here.
+      </p>
+      <p className="text-sm text-gray-500">
+        This page will auto-update when you’re confirmed.
       </p>
     </div>
-  </div>
-);
+  );
+};
+
 export default CheckEmail;

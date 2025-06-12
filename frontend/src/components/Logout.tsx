@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 type LogoutModalProps = {
   isOpen: boolean;
@@ -8,13 +9,14 @@ type LogoutModalProps = {
 
 const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onCancel }) => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   if (!isOpen) return null;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.clear();
-
-    navigate("/home");
+    await logout();
+    navigate("/");
   };
 
   return (
