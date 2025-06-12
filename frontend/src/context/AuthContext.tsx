@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "../supabaseClient";
-import type { Session, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 // Define the context value type
 interface AuthContextType {
@@ -18,7 +18,8 @@ interface AuthContextType {
   ) => ReturnType<typeof supabase.auth.signInWithPassword>;
   signup: (
     email: string,
-    password: string
+    password: string,
+    displayName: string
   ) => ReturnType<typeof supabase.auth.signUp>;
   logout: () => ReturnType<typeof supabase.auth.signOut>;
 }
@@ -35,13 +36,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
+    const getSessionAndUser = async () => {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        console.warn("No active session found yet.");
+        setUser(null);
+        return;
+      }
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.warn(
+          "User not fully confirmed yet or missing:",
+          userError.message
+        );
+        setUser(null); // or use another state like setAuthError(userError)
+      } else {
+        setUser(user);
+      }
+    };
+
+    getSessionAndUser();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session: Session | null) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
 
@@ -51,8 +78,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
 
-  const signup = (email: string, password: string) =>
-    supabase.auth.signUp({ email, password });
+  const signup = (email: string, password: string, displayName: string) =>
+    supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "http://localhost:5173/login",
+        data: {
+          display_name: displayName,
+        },
+      },
+    });
 
   const logout = () => supabase.auth.signOut();
 

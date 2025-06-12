@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu, X, Truck, PlusSquare, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const Sidebar = ({
   onSelect,
@@ -9,6 +10,7 @@ const Sidebar = ({
   activePage: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -42,10 +44,15 @@ const Sidebar = ({
           {/* Profile */}
           <div className="flex flex-col items-center pt-16 lg:pt-10">
             <div className="w-24 h-24 rounded-full flex items-center justify-center bg-white text-black">
-              <h1 className="text-5xl font-bold">K</h1>
+              <h1 className="text-5xl font-bold">
+                {" "}
+                {user?.user_metadata?.display_name?.charAt(0) ?? "?"}
+              </h1>
             </div>
-            <h2 className="mt-3 font-bold text-lg">Ken Akpo</h2>
-            <p className="text-base">kennethakpo61@gmail.com</p>
+            <h2 className="mt-3 font-bold text-lg">
+              {user?.user_metadata?.display_name}
+            </h2>
+            <p className="text-base">{user?.email}</p>
           </div>
 
           {/* Navigation */}

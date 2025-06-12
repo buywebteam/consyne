@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
+import { useAuth } from "../context/AuthContext";
 
 function TrackShipment() {
   const [trackingId, setTrackingId] = useState(
@@ -9,6 +10,7 @@ function TrackShipment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchAttempted, setSearchAttempted] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     sessionStorage.setItem("trackingId", trackingId);
@@ -100,7 +102,10 @@ function TrackShipment() {
     <div className="max-w-2xl mx-auto mt-6 p-4">
       <div className="md:my-12 lg:mb-10 mb-10 text-center">
         <h1 className="md:text-4xl text-2xl font-bold">
-          Welcome, Kenneth Akpo
+          Welcome,{" "}
+          <span className="text-orange-500">
+            {user?.user_metadata?.display_name}!
+          </span>
         </h1>
       </div>
       <h2 className="text-2xl font-bold mb-6 text-center">

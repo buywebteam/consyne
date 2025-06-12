@@ -3,18 +3,22 @@ import RecentShipment from "./RecentShipment";
 import Button from "./Button";
 import { useState } from "react";
 import CreateShipmentModal from "./CreateShipmentModal";
+import { useAuth } from "../context/AuthContext";
 
 function CreateShipment() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const { user } = useAuth();
 
   return (
     <div className="md:py-16 lg:py-2 py-8 md:text-center lg:text-left">
       <div className="md:my-10 lg:mb-12 mb-10">
         <h1 className="md:text-4xl text-2xl font-bold">
-          Welcome, Kenneth Akpo
+          Welcome,{" "}
+          <span className="text-orange-500">
+            {user?.user_metadata?.display_name}!
+          </span>
         </h1>
       </div>
       <h1 className="md:text-3xl text-xl font-bold mb-2">
