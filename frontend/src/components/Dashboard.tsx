@@ -41,7 +41,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Scrollable */}
-      <main className="lg:ml-64 flex-1 overflow-y-auto max-h-screen bg-gray-50 p-4 sm:p-5 py-20">
+      <main className="lg:ml-64 flex-1 overflow-y-auto max-h-screen p-4 sm:p-5 py-20">
         {renderContent()}
       </main>
 
