@@ -17,16 +17,16 @@ const Footer = () => {
 
           {/* Links */}
           <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8">
-            <a href="#about" className="text-lg hover:text-gray-400">
+            <a href="#about" className="text-lg hover:underline">
               About Us
             </a>
-            <a href="#services" className="text-lg hover:text-gray-400">
+            <a href="#services" className="text-lg hover:underline">
               Services
             </a>
-            <a href="#contact" className="text-lg hover:text-gray-400">
+            <a href="#contact" className="text-lg hover:underline">
               Contact Us
             </a>
-            <a href="#privacy" className="text-lg hover:text-gray-400">
+            <a href="#privacy" className="text-lg hover:underline">
               Privacy Policy
             </a>
           </div>
