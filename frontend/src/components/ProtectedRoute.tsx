@@ -1,19 +1,19 @@
+import React from "react";
+import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Adjust path if needed
-import type { ReactNode } from "react";
+import Spinner from "./Spinner";
+const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, loading } = useAuth();
 
-interface ProtectedRouteProps {
-  children: ReactNode;
-}
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/home" replace />;
+  if (loading) {
+    return (
+      <div className="text-center mt-10 flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
   }
 
-  return <>{children}</>;
+  return user ? children : <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;

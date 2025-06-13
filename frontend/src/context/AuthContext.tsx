@@ -12,6 +12,7 @@ import type { User } from "@supabase/supabase-js";
 // Define the context value type
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (
     email: string,
     password: string
@@ -34,34 +35,16 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // NEW
 
   useEffect(() => {
     const getSessionAndUser = async () => {
       const {
         data: { session },
-        error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session) {
-        console.warn("No active session found yet.");
-        setUser(null);
-        return;
-      }
-
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError) {
-        console.warn(
-          "User not fully confirmed yet or missing:",
-          userError.message
-        );
-        setUser(null); // or use another state like setAuthError(userError)
-      } else {
-        setUser(user);
-      }
+      setUser(session?.user ?? null);
+      setLoading(false);
     };
 
     getSessionAndUser();
@@ -69,7 +52,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -93,7 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => supabase.auth.signOut();
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
