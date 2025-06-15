@@ -44,6 +44,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } = await supabase.auth.getSession();
 
       setUser(session?.user ?? null);
+
+      // Get the JWT token for API testing
+      if (session?.access_token) {
+        console.log("JWT Token:", session.access_token);
+        // You can also store it in state if needed
+        // setJwtToken(session.access_token);
+      }
+
       setLoading(false);
     };
 
@@ -53,6 +61,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+
+      // Also log the token when auth state changes
+      if (session?.access_token) {
+        console.log("JWT Token (auth change):", session.access_token);
+      }
+
       setLoading(false);
     });
 
