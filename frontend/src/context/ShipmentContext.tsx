@@ -1,6 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { supabase } from "../supabaseClient";
 import { useAuth } from "./AuthContext";
+
+type NewType = number;
 
 interface ShipmentForm {
   shipperName: string;
@@ -9,7 +12,7 @@ interface ShipmentForm {
   receiverAddress: string;
   pickupDate: string;
   deliveryDate: string;
-  weight: string;
+  weight: NewType;
   package: string;
   shipmentMode: string;
   shipmentType: string;
@@ -27,7 +30,7 @@ const ShipmentContext = createContext<ShipmentContextType | undefined>(
 );
 
 export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
-  const { accessToken } = useAuth();
+  const { user, loading: authLoading } = useAuth(); // <- get user and loading
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +39,19 @@ export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      if (!accessToken) throw new Error("User is not authenticated");
+      if (authLoading) throw new Error("Authentication still loading...");
+      if (!user) throw new Error("User is not authenticated");
+
+      // Always get fresh token before calling Edge Function!
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const freshToken = session?.access_token;
+      if (!freshToken) throw new Error("Could not get access token");
 
       const response = await fetch(
         "https://ddlyeqosflhwbyggnnxb.supabase.co/functions/v1/create-shipment",
@@ -44,7 +59,7 @@ export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`, // ✅ Use token from context
+            Authorization: `Bearer ${freshToken}`,
           },
           body: JSON.stringify(formData),
         }
