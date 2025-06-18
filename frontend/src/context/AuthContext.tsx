@@ -13,6 +13,7 @@ import type { User } from "@supabase/supabase-js";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  accessToken: string | null;
   login: (
     email: string,
     password: string
@@ -35,7 +36,8 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // NEW
+  const [loading, setLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState<string | null>(null); // 🔐
 
   useEffect(() => {
     const getSessionAndUser = async () => {
@@ -44,29 +46,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } = await supabase.auth.getSession();
 
       setUser(session?.user ?? null);
-
-      // Get the JWT token for API testing
-      if (session?.access_token) {
-        console.log("JWT Token:", session.access_token);
-        // You can also store it in state if needed
-        // setJwtToken(session.access_token);
-      }
-
+      setAccessToken(session?.access_token ?? null);
       setLoading(false);
     };
-
     getSessionAndUser();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-
-      // Also log the token when auth state changes
-      if (session?.access_token) {
-        console.log("JWT Token (auth change):", session.access_token);
-      }
-
+      setAccessToken(session?.access_token ?? null);
       setLoading(false);
     });
 
@@ -91,7 +80,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => supabase.auth.signOut();
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, accessToken, loading, login, signup, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-//import { useShipment, type ShipmentData } from "../context/ShipmentContext";
-import { ToastContainer } from "react-toastify";
+import { useShipment } from "../context/ShipmentContext";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type ShipmentModalProps = {
@@ -8,11 +8,26 @@ type ShipmentModalProps = {
   onClose: () => void;
 };
 
+type FormData = {
+  shipperName: string;
+  shipperAddress: string;
+  receiverName: string;
+  receiverAddress: string;
+  package: string;
+  weight: string;
+  pickupDate: string;
+  deliveryDate: string;
+  shipmentType: string;
+  shipmentMode: string;
+  carrierMode: string;
+};
+
 const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [formData, setFormData] = useState({
+  const { createShipment, loading } = useShipment();
+  const [formData, setFormData] = useState<FormData>({
     shipperName: "",
     shipperAddress: "",
     receiverName: "",
@@ -26,7 +41,6 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
     deliveryDate: "",
   });
 
-  // Clear error or form data when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -52,90 +66,58 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createShipment(formData);
+      toast.success("Shipment created successfully!");
+      onClose();
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create shipment";
+      toast.error(`Error: ${errorMessage}`);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full mx-4">
         <h2 className="text-xl font-semibold mb-4 text-center">
           Create New Shipment
         </h2>
-        <form className="grid grid-cols-2 md:grid-cols-2 gap-6 gap-x-4">
-          <div>
-            <label htmlFor="shipperName" className="block mb-1 font-medium">
-              Shipper Name
-            </label>
-            <input
-              type="text"
-              name="shipperName"
-              id="shipperName"
-              value={formData.shipperName}
-              onChange={handleChange}
-              required
-              className="border p-2 rounded w-full"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="shipperAddress" className="block mb-1 font-medium">
-              Shipper Address
-            </label>
-            <input
-              type="text"
-              name="shipperAddress"
-              id="shipperAddress"
-              value={formData.shipperAddress}
-              onChange={handleChange}
-              required
-              className="border p-2 rounded w-full"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="receiverName" className="block mb-1 font-medium">
-              Receiver Name
-            </label>
-            <input
-              type="text"
-              name="receiverName"
-              id="receiverName"
-              value={formData.receiverName}
-              onChange={handleChange}
-              required
-              className="border p-2 rounded w-full"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="receiverAddress" className="block mb-1 font-medium">
-              Receiver Address
-            </label>
-            <input
-              type="text"
-              name="receiverAddress"
-              id="receiverAddress"
-              value={formData.receiverAddress}
-              onChange={handleChange}
-              required
-              className="border p-2 rounded w-full"
-            />
-          </div>
-          <div>
-            <label htmlFor="package" className="block mb-1 font-medium">
-              Package
-            </label>
-            <input
-              type="text"
-              name="package"
-              id="package"
-              value={formData.package}
-              onChange={handleChange}
-              required
-              className="border p-2 rounded w-full"
-            />
-          </div>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-2 md:grid-cols-2 gap-6 gap-x-4"
+        >
+          {[
+            { label: "Shipper Name", name: "shipperName" },
+            { label: "Shipper Address", name: "shipperAddress" },
+            { label: "Receiver Name", name: "receiverName" },
+            { label: "Receiver Address", name: "receiverAddress" },
+            { label: "Package", name: "package" },
+            { label: "Weight (kg)", name: "weight", type: "number" },
+            { label: "Pickup Date", name: "pickupDate", type: "date" },
+            { label: "Delivery Date", name: "deliveryDate", type: "date" },
+          ].map(({ label, name, type = "text" }) => (
+            <div key={name}>
+              <label htmlFor={name} className="block mb-1 font-medium">
+                {label}
+              </label>
+              <input
+                type={type}
+                name={name}
+                id={name}
+                value={formData[name as keyof FormData]}
+                onChange={handleChange}
+                required
+                className="border p-2 rounded w-full"
+                autoComplete="off"
+              />
+            </div>
+          ))}
 
           <div>
             <label htmlFor="shipmentType" className="block mb-1 font-medium">
@@ -147,6 +129,7 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
               value={formData.shipmentType}
               onChange={handleChange}
               className="border p-2 rounded w-full"
+              required
             >
               <option value="">Select Type</option>
               <option value="International Shipment">
@@ -166,6 +149,7 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
               value={formData.shipmentMode}
               onChange={handleChange}
               className="border p-2 rounded w-full"
+              required
             >
               <option value="">Select Mode</option>
               <option value="Air Freight">Air Freight</option>
@@ -173,6 +157,7 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
               <option value="Sea Freight">Sea Freight</option>
             </select>
           </div>
+
           <div>
             <label htmlFor="carrierMode" className="block mb-1 font-medium">
               Mode of Carrier
@@ -183,6 +168,7 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
               value={formData.carrierMode}
               onChange={handleChange}
               className="border p-2 rounded w-full"
+              required
             >
               <option value="">Select Carrier</option>
               <option value="DHL">DHL</option>
@@ -191,66 +177,23 @@ const CreateShipmentModal: React.FC<ShipmentModalProps> = ({
             </select>
           </div>
 
-          <div>
-            <label htmlFor="weight" className="block mb-1 font-medium">
-              Weight (kg)
-            </label>
-            <input
-              type="number"
-              name="weight"
-              id="weight"
-              value={formData.weight}
-              onChange={handleChange}
-              className="border p-2 rounded w-full"
-              step="0.01"
-              min="0"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="pickupDate" className="block mb-1 font-medium">
-              Pickup Date
-            </label>
-            <input
-              type="date"
-              name="pickupDate"
-              id="pickupDate"
-              value={formData.pickupDate}
-              onChange={handleChange}
-              className="border p-2 rounded w-full"
-              autoComplete="off"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="deliveryDate" className="block mb-1 font-medium">
-              Delivery Date
-            </label>
-            <input
-              type="date"
-              name="deliveryDate"
-              id="deliveryDate"
-              value={formData.deliveryDate}
-              onChange={handleChange}
-              className="border p-2 rounded w-full"
-              autoComplete="off"
-            />
-          </div>
-
-          {/* Full-width button row */}
           <div className="col-span-1 md:col-span-2 flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 cursor-pointer text-sm"
+              className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 text-sm"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-3 py-1 rounded bg-orange-500 hover:bg-orange-700 transition ease-in-out text-white cursor-pointer text-sm"
+              className={`px-3 py-1 rounded text-sm text-white ${
+                loading ? "bg-orange-300" : "bg-orange-500 hover:bg-orange-700"
+              }`}
+              disabled={loading}
             >
-              Submit
+              {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>
