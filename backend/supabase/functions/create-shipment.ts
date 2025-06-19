@@ -1,4 +1,3 @@
-/// <reference types="https://esm.sh/@supabase/supabase-js@2.42.3" />
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
@@ -70,12 +69,12 @@ serve(async (req) => {
     }
     // Get environment variables
     const supabaseUrl = Deno.env.get("PROJECT_URL");
-    const supabaseAnonKey = Deno.env.get("ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SERVICE_ROLE_KEY");
     console.log("Environment check:", {
       hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseAnonKey,
+      hasServiceKey: !!supabaseServiceKey,
     });
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!supabaseUrl || !supabaseServiceKey) {
       console.error("Missing environment variables");
       return new Response(
         JSON.stringify({
@@ -90,19 +89,24 @@ serve(async (req) => {
         }
       );
     }
-    // Create Supabase client
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
+    // Create Supabase client with service role (bypasses RLS)
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    // Create client for user authentication
+    const supabaseAuth = createClient(
+      supabaseUrl,
+      Deno.env.get("ANON_KEY") || "",
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
         },
-      },
-    });
+      }
+    );
     // Verify user authentication
     console.log("Verifying user authentication...");
-    const { data: userData, error: userError } = await supabase.auth.getUser(
-      jwt
-    );
+    const { data: userData, error: userError } =
+      await supabaseAuth.auth.getUser(jwt);
     if (userError) {
       console.error("User verification error:", userError);
       return new Response(
@@ -195,9 +199,9 @@ serve(async (req) => {
       created_at: new Date().toISOString(),
     };
     console.log("Inserting shipment data...");
-    // Insert shipment into database
-    const { data, error } = await supabase
-      .from("shipment") // Make sure table name is correct
+    // Insert shipment into database using admin client (bypasses RLS)
+    const { data, error } = await supabaseAdmin
+      .from("shipment") // Use your actual table name
       .insert([shipmentData])
       .select();
     if (error) {
