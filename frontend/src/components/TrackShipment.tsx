@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import { useAuth } from "../context/AuthContext";
+import { useShipment } from "../context/ShipmentContext";
 
 function TrackShipment() {
   const [trackingId, setTrackingId] = useState(
     () => sessionStorage.getItem("trackingId") || ""
   );
-  const [shipmentData, setShipmentData] = useState<ShipmentData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchAttempted, setSearchAttempted] = useState(false);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    sessionStorage.setItem("trackingId", trackingId);
-  }, [trackingId]);
-
-  interface ShipmentData {
+  const [shipmentData, setShipmentData] = useState<{
     id: string;
     status: string;
     shipperName: string;
@@ -24,47 +15,85 @@ function TrackShipment() {
     receiverName: string;
     receiverAddress: string;
     package: string;
-    weight: number;
+    weight: number | string;
     carrierMode: string;
     shipmentMode: string;
     shipmentType: string;
     pickupDate: string;
     deliveryDate: string;
-  }
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchAttempted, setSearchAttempted] = useState(false);
 
-  // Example handleSubmit function (replace with your actual API call)
+  const { user } = useAuth();
+  const { trackShipment } = useShipment();
+
+  useEffect(() => {
+    sessionStorage.setItem("trackingId", trackingId);
+  }, [trackingId]);
+
+  // Define the expected type for the result of trackShipment
+  type TrackShipmentResult = {
+    tracking_number: string;
+    status: string;
+    shipper_name: string;
+    shipper_address: string;
+    receiver_name: string;
+    receiver_address: string;
+    package: string;
+    weight: number | string;
+    carrier_mode: string;
+    shipment_mode: string;
+    shipment_type: string;
+    pickup_date: string;
+    delivery_date: string;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSearchAttempted(true);
+    setShipmentData(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Example: Only accept "12345" as a valid tracking ID
-      if (trackingId === "12345") {
+    try {
+      const result = (await trackShipment(
+        trackingId.trim()
+      )) as TrackShipmentResult | null;
+      console.log("TrackShipment result:", result);
+
+      if (result) {
         setShipmentData({
-          id: "12345",
-          status: "In Transit",
-          shipperName: "John Doe",
-          shipperAddress: "123 Main St, City",
-          receiverName: "Jane Smith",
-          receiverAddress: "456 Elm St, City",
-          package: "Box",
-          weight: 2.5,
-          carrierMode: "Air",
-          shipmentMode: "Express",
-          shipmentType: "Document",
-          pickupDate: "2024-06-01",
-          deliveryDate: "2024-06-05",
+          id: result.tracking_number,
+          status: result.status,
+          shipperName: result.shipper_name,
+          shipperAddress: result.shipper_address,
+          receiverName: result.receiver_name,
+          receiverAddress: result.receiver_address,
+          package: result.package,
+          weight: result.weight,
+          carrierMode: result.carrier_mode,
+          shipmentMode: result.shipment_mode,
+          shipmentType: result.shipment_type,
+          pickupDate: result.pickup_date,
+          deliveryDate: result.delivery_date,
         });
-        setError(null);
       } else {
         setShipmentData(null);
         setError(null);
       }
+    } catch (err: unknown) {
+      console.error("TrackShipment error:", err);
+      setShipmentData(null);
+      if (err instanceof Error) {
+        setError(err.message || "Failed to track shipment");
+      } else {
+        setError("Failed to track shipment");
+      }
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   type ShipmentStatus =
@@ -104,7 +133,7 @@ function TrackShipment() {
         <h1 className="md:text-4xl text-2xl font-bold">
           Welcome,{" "}
           <span className="text-orange-500">
-            {user?.user_metadata?.display_name}!
+            {user?.user_metadata?.display_name || "User"}!
           </span>
         </h1>
       </div>
@@ -205,11 +234,11 @@ function TrackShipment() {
               <div>
                 <span className="text-sm text-gray-600">Mode of Carrier:</span>
                 <p className="font-medium">{shipmentData.carrierMode}</p>
-              </div>{" "}
+              </div>
               <div>
                 <span className="text-sm text-gray-600">Mode of Shipment:</span>
                 <p className="font-medium">{shipmentData.shipmentMode}</p>
-              </div>{" "}
+              </div>
               <div>
                 <span className="text-sm text-gray-600">Type of Shipment:</span>
                 <p className="font-medium">{shipmentData.shipmentType}</p>
@@ -225,7 +254,7 @@ function TrackShipment() {
               <div>
                 <span className="text-sm text-gray-600">Shipment Status:</span>
                 <p
-                  className={`font-medium inline-block px-2 py-1 border rounded-full ${getStatusColor(
+                  className={`font-medium text-sm inline-block px-2 py-1 border rounded-full ${getStatusColor(
                     shipmentData.status
                   )}`}
                 >

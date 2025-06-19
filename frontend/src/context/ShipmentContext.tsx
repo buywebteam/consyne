@@ -22,6 +22,7 @@ interface ShipmentForm {
 interface ShipmentContextType {
   createShipment: (formData: ShipmentForm) => Promise<unknown>;
   getShipments: () => Promise<[]>;
+  trackShipment: (trackingNumber: string) => Promise<unknown>;
   loading: boolean;
   error: string | null;
 }
@@ -128,9 +129,57 @@ export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const trackShipment = async (trackingNumber: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (authLoading) throw new Error("Authentication still loading...");
+      if (!user) throw new Error("User is not authenticated");
+
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const freshToken = session?.access_token;
+      if (!freshToken) throw new Error("Could not get access token");
+
+      const response = await fetch(
+        "https://ddlyeqosflhwbyggnnxb.supabase.co/functions/v1/track-shipment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${freshToken}`,
+          },
+          body: JSON.stringify({
+            tracking_number: trackingNumber,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to track shipment");
+      }
+
+      return result.data;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unexpected error";
+      setError(message);
+      console.error("Track shipment error:", err);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ShipmentContext.Provider
-      value={{ createShipment, getShipments, loading, error }}
+      value={{ createShipment, getShipments, trackShipment, loading, error }}
     >
       {children}
     </ShipmentContext.Provider>
