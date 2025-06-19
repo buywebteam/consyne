@@ -1,63 +1,47 @@
 import { useEffect, useState } from "react";
 import { FiCopy, FiCheck } from "react-icons/fi";
 import Spinner from "./Spinner";
+import { useShipment } from "../context/ShipmentContext"; // Adjust path if needed
 
-// Dummy mock data
-const mockShipments = [
-  {
-    id: "TRK123456",
-    receiverName: "John Doe",
-    receiverAddress: "123 Main Street, Lagos",
-    package: "Electronics",
-    weight: 2.5,
-    carrierMode: "Air",
-    createdAt: new Date(),
-  },
-  {
-    id: "TRK654321",
-    receiverName: "Jane Smith",
-    receiverAddress: "456 Elm Street, Abuja",
-    package: "Clothing",
-    weight: 1.2,
-    carrierMode: "Road",
-    createdAt: new Date(),
-  },
-  {
-    id: "TRK789012",
-    receiverName: "Mike Johnson",
-    receiverAddress: "789 Maple Avenue, Port Harcourt",
-    package: "Books",
-    weight: 3.1,
-    carrierMode: "Sea",
-    createdAt: new Date(),
-  },
-];
+interface Shipment {
+  id: string;
+  receiver_name: string;
+  receiver_address: string;
+  package: string;
+  weight: number;
+  carrier_mode: string;
+  created_at: string;
+  tracking_number: string;
+}
 
 const RecentShipment = () => {
-  const [shipments, setShipments] = useState<typeof mockShipments>([]);
+  const { getShipments } = useShipment();
+  const [shipments, setShipments] = useState<Shipment[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCopy = (id: string) => {
-    navigator.clipboard.writeText(id).then(() => {
-      setCopiedId(id);
+  const handleCopy = (trackingId: string) => {
+    navigator.clipboard.writeText(trackingId).then(() => {
+      setCopiedId(trackingId);
       setTimeout(() => setCopiedId(null), 2000);
     });
   };
 
   useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
+    const fetchShipments = async () => {
       try {
-        setShipments(mockShipments);
-        setLoading(false);
-      } catch {
-        setError("Failed to load shipments.");
+        const data = await getShipments();
+        setShipments(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
         setLoading(false);
       }
-    }, 1000); // Simulate loading delay
-  }, []);
+    };
+
+    fetchShipments();
+  }, [getShipments]);
 
   if (loading) {
     return (
@@ -66,9 +50,7 @@ const RecentShipment = () => {
           Recent Shipments
         </h2>
         <div className="flex justify-center items-center p-8">
-          <div className="text-gray-600">
-            <Spinner />
-          </div>
+          <Spinner />
         </div>
       </div>
     );
@@ -124,19 +106,19 @@ const RecentShipment = () => {
             {shipments.map((item) => (
               <tr
                 key={item.id}
-                className="block lg:table-row border-t border-orange-100 text-sm bg-orange-50 text-gray-800 p-2"
+                className="block lg:table-row border-t border-orange-100 text-xs bg-orange-50 text-gray-800 p-2 "
               >
                 <td className="block lg:table-cell p-3 lg:p-3">
                   <span className="font-semibold lg:hidden">
                     Receiver Name:{" "}
                   </span>
-                  {item.receiverName}
+                  {item.receiver_name}
                 </td>
                 <td className="block lg:table-cell p-3 lg:p-3">
                   <span className="font-semibold lg:hidden">
                     Receiver Address:{" "}
                   </span>
-                  {item.receiverAddress}
+                  {item.receiver_address}
                 </td>
                 <td className="block lg:table-cell p-3 lg:p-3">
                   <span className="font-semibold lg:hidden">Package: </span>
@@ -150,15 +132,15 @@ const RecentShipment = () => {
                   <span className="font-semibold lg:hidden">
                     Mode of Carrier:{" "}
                   </span>
-                  {item.carrierMode}
+                  {item.carrier_mode}
                 </td>
                 <td className="block lg:table-cell p-3 lg:p-3">
                   <span className="font-semibold lg:hidden">Date: </span>
-                  {item.createdAt.toLocaleDateString()}
+                  {new Date(item.created_at).toLocaleDateString()}
                 </td>
-                <td className="block lg:table-cell p-3 lg:p-3">
+                <td className="block lg:table-cell p-3 lg:p-3 whitespace-nowrap">
                   <span className="font-semibold lg:hidden">Time: </span>
-                  {item.createdAt.toLocaleTimeString([], {
+                  {new Date(item.created_at).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -169,9 +151,9 @@ const RecentShipment = () => {
                       <span className="font-semibold lg:hidden">
                         Tracking ID:{" "}
                       </span>
-                      {item.id}
+                      {item.tracking_number}
                     </span>
-                    {copiedId === item.id ? (
+                    {copiedId === item.tracking_number ? (
                       <FiCheck
                         className="text-green-600"
                         size={18}
@@ -181,7 +163,7 @@ const RecentShipment = () => {
                       <FiCopy
                         className="text-gray-500 hover:text-gray-800"
                         size={18}
-                        onClick={() => handleCopy(item.id)}
+                        onClick={() => handleCopy(item.tracking_number)}
                         title="Copy tracking ID"
                       />
                     )}

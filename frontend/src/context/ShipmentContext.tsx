@@ -21,6 +21,7 @@ interface ShipmentForm {
 
 interface ShipmentContextType {
   createShipment: (formData: ShipmentForm) => Promise<unknown>;
+  getShipments: () => Promise<[]>;
   loading: boolean;
   error: string | null;
 }
@@ -81,8 +82,56 @@ export const ShipmentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getShipments = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (authLoading) throw new Error("Authentication still loading...");
+      if (!user) throw new Error("User is not authenticated");
+
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const freshToken = session?.access_token;
+      if (!freshToken) throw new Error("Could not get access token");
+
+      const response = await fetch(
+        "https://ddlyeqosflhwbyggnnxb.supabase.co/functions/v1/get-shipment",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${freshToken}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to fetch shipments");
+      }
+
+      return result.data; // assuming array of shipments
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unexpected error";
+      setError(message);
+      console.error("Get shipments error:", err);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <ShipmentContext.Provider value={{ createShipment, loading, error }}>
+    <ShipmentContext.Provider
+      value={{ createShipment, getShipments, loading, error }}
+    >
       {children}
     </ShipmentContext.Provider>
   );
